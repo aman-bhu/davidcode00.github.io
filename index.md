@@ -2,4 +2,4 @@
 
 ### MY name is David. You know me.
 
-I am experimeting some thing here.
+I am experimenting some thing here.
