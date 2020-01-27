@@ -7,24 +7,43 @@
     </head>
     
 <body>
-    <img id="img" src="catvsdog.jpeg"></img>
+    <input type="file" id="input_file"/>
+    <canvas id="canvasInput" height="512"></canvas>
     <div id="output" style="font-family:courier;font-size:24px;height=300px"></div>
 </body>
 <script>
   // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
   // available on the index-page because of the script tag above.
 
-  const img = document.getElementById('img');
+  let inputElement = document.getElementById('input_file');
+  let canvas = document.getElementById('canvasInput');
+  let ctx = canvas.getContext('2d');
+  let img = new Image();
   const outp = document.getElementById('output');
+  inputElement.addEventListener('change',(e) =>{
+      let file = e.target.files;
+      if (file.length >0 ){
+          img.src = URL.createObjectURL(file[0]);
+          img.onload = function() {
+              canvas.width = img.width;
+              canvas.height=img.height;
+              ctx.drawImage(img,0,0,img.width,img.height);
+          }
+          cocoSsd.load().then(model => {
+        // detect objects in the image.
+          model.detect(img).then(predictions => {
+            console.log('Predictions: ', predictions);
+                for(var i = 0; i<predictions.length; i++){
+                    outp.innerHTML += "<br/>" + predictions[i].class + " bounding box:"+predictions[i].bbox ;
+                }
+        });
+      });
+          
+      }
+  })
+  
   // Load the model.
-  cocoSsd.load().then(model => {
-    // detect objects in the image.
-    model.detect(img).then(predictions => {
-      console.log('Predictions: ', predictions);
-        for(var i = 0; i<predictions.length; i++){
-                outp.innerHTML += "<br/>" + predictions[i].class + " bounding box:"+predictions[i].bbox ;
-            }
-    });
-  });
+    
+  
 </script>
 </html>
